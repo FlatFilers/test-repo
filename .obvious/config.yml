@@ -1,0 +1,8 @@
+# Obvious repository policy for FlatFilers/test-repo
+# Detected from GitHub repo settings on 2026-08-20.
+version: 1
+default_branch: master
+# GitHub allows merge commits, squash, and rebase on this repo;
+# merge commit is the default method.
+merge_method: merge
+delete_branch_on_merge: false
