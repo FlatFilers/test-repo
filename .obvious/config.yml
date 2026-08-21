@@ -1,0 +1,5 @@
+# Obvious repository policy — auto-detected from GitHub settings on 2026-08-21
+default_branch: master
+# merge commit, rebase, and squash are all allowed on this repo; squash preferred
+merge_method: squash
+delete_branch_on_merge: false
