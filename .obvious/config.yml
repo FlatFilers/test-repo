@@ -1,0 +1,12 @@
+# Obvious repository configuration for FlatFilers/test-repo
+# Auto-detected from GitHub repo settings during onboarding, 2026-08-24.
+
+# Default branch (from GitHub repo settings)
+defaultBranch: master
+
+# Merge method for PRs into the default branch.
+# Repo allows merge commits, squash, and rebase merges; squash is used for setup PRs.
+mergeMethod: squash
+
+# A human must approve and merge PRs that target the default branch.
+requireHumanMerge: true
