@@ -1,13 +1,89 @@
-body {
+:root {
+  --bg-gradient-start: #6d28d9;
+  --bg-gradient-mid: #db2777;
+  --bg-gradient-end: #2563eb;
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-solid: #ffffff;
+  --text-primary: #1f1240;
+  --text-secondary: #5b4b8a;
+  --accent: #7c3aed;
+  --accent-strong: #db2777;
+  --shadow-color: rgba(76, 29, 149, 0.25);
+  --focus-ring: #fbbf24;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-gradient-start: #1e1240;
+    --bg-gradient-mid: #4a1942;
+    --bg-gradient-end: #0f2557;
+    --surface: rgba(30, 22, 54, 0.85);
+    --surface-solid: #201636;
+    --text-primary: #f4f1ff;
+    --text-secondary: #c4b8f0;
+    --accent: #a78bfa;
+    --accent-strong: #f472b6;
+    --shadow-color: rgba(0, 0, 0, 0.45);
+    --focus-ring: #fbbf24;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(
+    -45deg,
+    var(--bg-gradient-start),
+    var(--bg-gradient-mid),
+    var(--bg-gradient-end),
+    var(--bg-gradient-start)
+  );
+  background-size: 400% 400%;
+  animation: skmz-drift 18s ease infinite;
+}
+
+@keyframes skmz-drift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Respect reduced-motion preferences globally: freeze decorative animation,
+   keep functional transitions snappy but instant. */
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+    background-position: 0% 50%;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
