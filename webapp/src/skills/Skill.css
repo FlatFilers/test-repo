@@ -1,31 +1,76 @@
-.skills {
+.skills-row {
     display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
 }
 
-.skill {
-    display: inline-block;
-    align-self: flex-end;
-    padding: 10px;
-    margin-right: 8px;
+.skill-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.greySkill {
-    background-color: lightgrey;
+.skill-chip:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
 }
 
-.greySkill:hover {
-    background-color: darkgrey;
+.skill-chip:active {
+    transform: translateY(0) scale(0.98);
 }
 
-.greenSkill {
-    background-color: greenyellow;
+/* Tier 1 = supporting skill, calm blue. Tier 2 = notable, punchier
+   pink/purple and bold. Tier 3 = standout skill, warm gold gradient
+   with a subtle glow. */
+.skill-chip--tier-1 {
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
 }
 
-.greenSkill:hover {
-    background-color: darkseagreen;
+.skill-chip--tier-2 {
+    background: linear-gradient(135deg, #a78bfa, #db2777);
+    font-weight: 700;
 }
 
-.boldText {
-    font-weight: bold;
+.skill-chip--tier-3 {
+    background: linear-gradient(135deg, #fbbf24, #fb7185);
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(251, 191, 36, 0.45);
 }
 
+.skill-chip--highlighted {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    animation: skill-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skill-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(251, 191, 36, 0);
+    }
+}
+
+.skill-chip-icon {
+    font-size: 0.9em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skill-chip:hover {
+        transform: none;
+    }
+
+    .skill-chip--highlighted {
+        animation: none;
+    }
+}
