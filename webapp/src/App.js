@@ -45,7 +45,8 @@ export class App extends Component {
 
     render() {
         return <div className="container collection">
-            <SearchBox search={this.state.search} updateSearch={this.updateSearch}/>
+            <SearchBox search={this.state.search} updateSearch={this.updateSearch}
+                       count={this.state.programmers.length}/>
             <Programmers programmers={this.state.programmers}
                          search={this.state.search} updateSearch={this.updateSearch}/>
         </div>;
