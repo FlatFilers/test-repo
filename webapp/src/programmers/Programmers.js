@@ -3,7 +3,7 @@ import {Programmer} from "./Programmer";
 import "./Progremmer.css";
 
 export function Programmers(props) {
-    if (props.programmers.length === 0 && props.search.length > 0) {
+    if (!props.loading && props.programmers.length === 0 && props.search.length > 0) {
         return <div className="row">
             <p className="col s12 center-align grey-text">
                 No programmers match "{props.search}". Try a different skill.

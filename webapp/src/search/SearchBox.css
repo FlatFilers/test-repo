@@ -15,6 +15,12 @@
     color: #616161;
 }
 
+.search-box__loading {
+    color: #757575;
+    font-size: 0.9rem;
+    margin-top: -0.5rem;
+}
+
 .search-box__count {
     color: #757575;
     font-size: 0.9rem;
