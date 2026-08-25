@@ -19,6 +19,11 @@ export function SearchBox(props) {
                    aria-label="Clear search"
                 />
             }
+            {props.loading &&
+                <div className="search-box__loading" role="status" aria-label="Searching">
+                    Searching...
+                </div>
+            }
             <div className="search-box__count">
                 {props.count} {props.count === 1 ? "programmer" : "programmers"}
             </div>

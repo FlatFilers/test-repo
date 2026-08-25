@@ -3,52 +3,93 @@ import ApolloClient, {gql} from 'apollo-boost';
 import {Programmers} from "./programmers/Programmers";
 import {SearchBox} from "./search/SearchBox";
 
+const SEARCH_DEBOUNCE_MS = 300;
+
+const PROGRAMMERS_QUERY = gql`
+    query Programmers($skill: String!) {
+        programmers(skill: $skill) {
+            name,
+            title,
+            picture,
+            company,
+            skills{
+                name,
+                icon,
+                importance
+            }
+        }
+    }
+`;
+
 export class App extends Component {
-    client = new ApolloClient({
+    client = this.props.client || new ApolloClient({
         uri: `${process.env.REACT_APP_API_URL}/query`
     });
     state = {
         programmers: [],
-        search: ""
+        search: "",
+        loading: false
     };
+    debounceTimer = null;
+    latestRequestId = 0;
+
     updateSearch = (search) => {
-        this.setState({search: search.trim()});
-        this.requestProgrammers(search.trim())
+        const trimmed = search.trim();
+        this.setState({search: trimmed});
+
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+        }
+        this.debounceTimer = setTimeout(() => {
+            this.requestProgrammers(trimmed);
+        }, SEARCH_DEBOUNCE_MS);
     };
 
     componentDidMount() {
         this.requestProgrammers(this.state.search);
     }
 
-    requestProgrammers(search) {
+    componentWillUnmount() {
+        this.unmounted = true;
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+        }
+    }
+
+    requestProgrammers(skill) {
+        const requestId = ++this.latestRequestId;
+        this.setState({loading: true});
+
         this.client.query({
-            query: gql`
-                {
-                    programmers(skill: "${search}") {
-                        name,
-                        title,
-                        picture,
-                        company,
-                        skills{
-                            name,
-                            icon,
-                            importance
-                        }
-                    }
-                }
-            `
+            query: PROGRAMMERS_QUERY,
+            variables: {skill},
+            fetchPolicy: "network-only"
         })
-        .then(result => this.setState({
-            programmers: result.data.programmers
-        }));
+        .then(result => {
+            if (this.unmounted || requestId !== this.latestRequestId) {
+                return; // unmounted, or a newer search has already superseded this response
+            }
+            this.setState({
+                programmers: result.data.programmers,
+                loading: false
+            });
+        })
+        .catch(error => {
+            if (this.unmounted || requestId !== this.latestRequestId) {
+                return;
+            }
+            console.error("Failed to load programmers", error);
+            this.setState({loading: false});
+        });
     }
 
     render() {
         return <div className="container collection">
             <SearchBox search={this.state.search} updateSearch={this.updateSearch}
-                       count={this.state.programmers.length}/>
+                       count={this.state.programmers.length} loading={this.state.loading}/>
             <Programmers programmers={this.state.programmers}
-                         search={this.state.search} updateSearch={this.updateSearch}/>
+                         search={this.state.search} updateSearch={this.updateSearch}
+                         loading={this.state.loading}/>
         </div>;
     }
 }
