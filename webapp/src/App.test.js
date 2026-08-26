@@ -153,6 +153,56 @@ test('shows a loading indicator in flight and suppresses the empty state until i
     expect(queryByText(/No programmers match/)).toBeInTheDocument();
 });
 
+function programmer(name, skillCount) {
+    return {
+        name,
+        title: 't',
+        picture: '',
+        company: 'c',
+        skills: Array.from({length: skillCount}, (_, i) => ({name: `s${i}`, icon: '', importance: 1}))
+    };
+}
+
+const renderedNames = container =>
+    Array.from(container.querySelectorAll('.name')).map(el => el.textContent);
+
+test('reorders the rendered results when a sort option is picked', async () => {
+    const client = mockClient(() => Promise.resolve({
+        data: {programmers: [programmer('Charlie', 3), programmer('Alice', 1), programmer('Bob', 3)]}
+    }));
+
+    const {container} = render(<App client={client}/>);
+    await flush();
+
+    // Default is the backend (best match) order.
+    expect(renderedNames(container)).toEqual(['Charlie', 'Alice', 'Bob']);
+
+    const sort = container.querySelector('#sort_order');
+    act(() => {
+        fireEvent.change(sort, {target: {value: 'name'}});
+    });
+    expect(renderedNames(container)).toEqual(['Alice', 'Bob', 'Charlie']);
+
+    act(() => {
+        fireEvent.change(sort, {target: {value: 'skills'}});
+    });
+    expect(renderedNames(container)).toEqual(['Bob', 'Charlie', 'Alice']);
+
+    // Sorting is display-only: it must not re-query the backend.
+    expect(client.query).toHaveBeenCalledTimes(1);
+});
+
+test('hides the sort control when there is nothing to sort', async () => {
+    const client = mockClient(() => Promise.resolve({
+        data: {programmers: [programmer('Alice', 1)]}
+    }));
+
+    const {container} = render(<App client={client}/>);
+    await flush();
+
+    expect(container.querySelector('#sort_order')).toBeNull();
+});
+
 test('stops loading and does not crash when the query rejects', async () => {
     const client = mockClient();
     client.query
