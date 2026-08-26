@@ -21,6 +21,7 @@ const flush = () => act(() => Promise.resolve());
 
 beforeEach(() => {
     jest.useFakeTimers();
+    window.history.replaceState(null, '', '/');
 });
 
 afterEach(() => {
@@ -172,4 +173,58 @@ test('stops loading and does not crash when the query rejects', async () => {
     expect(queryByRole('status')).not.toBeInTheDocument();
 
     console.error.mockRestore();
+});
+
+test('hydrates the search from ?skill= in the URL on load', async () => {
+    window.history.replaceState(null, '', '/?skill=go');
+    const client = mockClient();
+
+    const {getByPlaceholderText} = render(<App client={client}/>);
+    await flush();
+
+    expect(getByPlaceholderText(/Type skill name/i).value).toBe('go');
+    expect(client.query.mock.calls[0][0].variables).toEqual({skill: 'go'});
+});
+
+test('writes the debounced search to the URL and drops the param when cleared', async () => {
+    const client = mockClient();
+    const {getByPlaceholderText, getByLabelText} = render(<App client={client}/>);
+    await flush();
+
+    fireEvent.change(getByPlaceholderText(/Type skill name/i), {target: {value: 'java'}});
+    // Not written until the debounce fires, so typing does not thrash the URL.
+    expect(window.location.search).toBe('');
+
+    await act(async () => {
+        jest.advanceTimersByTime(300);
+        await Promise.resolve();
+    });
+
+    expect(window.location.search).toBe('?skill=java');
+
+    fireEvent.click(getByLabelText('Clear search'));
+    await act(async () => {
+        jest.advanceTimersByTime(300);
+        await Promise.resolve();
+    });
+
+    expect(window.location.search).toBe('');
+});
+
+test('adopts the URL term on back/forward without writing it back', async () => {
+    const client = mockClient();
+    const {getByPlaceholderText} = render(<App client={client}/>);
+    await flush();
+    client.query.mockClear();
+
+    window.history.replaceState(null, '', '/?skill=rust');
+    await act(async () => {
+        window.dispatchEvent(new PopStateEvent('popstate'));
+        await Promise.resolve();
+    });
+
+    expect(getByPlaceholderText(/Type skill name/i).value).toBe('rust');
+    expect(client.query).toHaveBeenCalledTimes(1);
+    expect(client.query.mock.calls[0][0].variables).toEqual({skill: 'rust'});
+    expect(window.location.search).toBe('?skill=rust');
 });
