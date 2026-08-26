@@ -1,0 +1,22 @@
+.sort-select {
+    margin-bottom: 0.5rem;
+}
+
+.sort-select__label {
+    color: #757575;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+.sort-select__input {
+    display: inline-block;
+    width: auto;
+    height: 2rem;
+    padding: 0 1.5rem 0 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background-color: #fff;
+    color: #424242;
+    font-size: 0.9rem;
+    cursor: pointer;
+}

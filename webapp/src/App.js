@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import ApolloClient, {gql} from 'apollo-boost';
 import {Programmers} from "./programmers/Programmers";
 import {SearchBox} from "./search/SearchBox";
+import {SortSelect} from "./search/SortSelect";
+import {DEFAULT_SORT, sortProgrammers} from "./search/sortProgrammers";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -28,6 +30,7 @@ export class App extends Component {
     state = {
         programmers: [],
         search: "",
+        sort: DEFAULT_SORT,
         loading: false
     };
     debounceTimer = null;
@@ -43,6 +46,10 @@ export class App extends Component {
         this.debounceTimer = setTimeout(() => {
             this.requestProgrammers(trimmed);
         }, SEARCH_DEBOUNCE_MS);
+    };
+
+    updateSort = (sort) => {
+        this.setState({sort});
     };
 
     componentDidMount() {
@@ -84,10 +91,14 @@ export class App extends Component {
     }
 
     render() {
+        const programmers = sortProgrammers(this.state.programmers, this.state.sort);
         return <div className="container collection">
             <SearchBox search={this.state.search} updateSearch={this.updateSearch}
                        count={this.state.programmers.length} loading={this.state.loading}/>
-            <Programmers programmers={this.state.programmers}
+            {programmers.length > 1 &&
+                <SortSelect sort={this.state.sort} updateSort={this.updateSort}/>
+            }
+            <Programmers programmers={programmers}
                          search={this.state.search} updateSearch={this.updateSearch}
                          loading={this.state.loading}/>
         </div>;
