@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import ApolloClient, {gql} from 'apollo-boost';
 import {Programmers} from "./programmers/Programmers";
 import {SearchBox} from "./search/SearchBox";
+import {BarrelRoll} from "./easteregg/BarrelRoll";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -84,12 +85,14 @@ export class App extends Component {
     }
 
     render() {
-        return <div className="container collection">
-            <SearchBox search={this.state.search} updateSearch={this.updateSearch}
-                       count={this.state.programmers.length} loading={this.state.loading}/>
-            <Programmers programmers={this.state.programmers}
-                         search={this.state.search} updateSearch={this.updateSearch}
-                         loading={this.state.loading}/>
-        </div>;
+        return <BarrelRoll>
+            <div className="container collection">
+                <SearchBox search={this.state.search} updateSearch={this.updateSearch}
+                           count={this.state.programmers.length} loading={this.state.loading}/>
+                <Programmers programmers={this.state.programmers}
+                             search={this.state.search} updateSearch={this.updateSearch}
+                             loading={this.state.loading}/>
+            </div>
+        </BarrelRoll>;
     }
 }
