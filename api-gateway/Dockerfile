@@ -1,0 +1,14 @@
+# syntax=docker/dockerfile:1
+
+FROM golang:1.22-alpine AS builder
+WORKDIR /app
+
+COPY . .
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /app/bin/api-gateway ./cmd/api-gateway
+
+FROM alpine:3.19
+RUN apk add --no-cache ca-certificates
+WORKDIR /app
+COPY --from=builder /app/bin/api-gateway /app/api-gateway
+EXPOSE 8080
+CMD ["/app/api-gateway"]
