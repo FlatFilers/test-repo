@@ -14,6 +14,11 @@ export const KONAMI_SEQUENCE = [
 ];
 
 function normalizeKey(key) {
+    // Some synthetic and IME events fire keydown with no `key` at all;
+    // treat that as unmatchable rather than throwing on key.length.
+    if (typeof key !== 'string') {
+        return null;
+    }
     // Arrow keys are multi-character ("ArrowUp") and already consistent;
     // only single-character keys (b/a) need case folding.
     return key.length === 1 ? key.toLowerCase() : key;
@@ -42,7 +47,10 @@ export function createKonamiMatcher(onUnlock, sequence = KONAMI_SEQUENCE) {
     let matchedLength = 0;
 
     return function handleKeyDown(event) {
-        const key = normalizeKey(event.key);
+        const key = normalizeKey(event && event.key);
+        if (key === null) {
+            return;
+        }
 
         while (matchedLength > 0 && key !== sequence[matchedLength]) {
             matchedLength = failureTable[matchedLength - 1];

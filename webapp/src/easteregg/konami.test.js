@@ -56,6 +56,18 @@ test('backtracks on a repeated prefix instead of fully resetting (the subtle cas
     expect(onUnlock).toHaveBeenCalledTimes(1);
 });
 
+test('ignores a keydown event with no key instead of throwing', () => {
+    const onUnlock = jest.fn();
+    const handler = createKonamiMatcher(onUnlock);
+
+    expect(() => handler({})).not.toThrow();
+    expect(() => handler({key: undefined})).not.toThrow();
+
+    // A no-key event shouldn't corrupt in-progress matching either.
+    pressSequence(handler, FULL_SEQUENCE);
+    expect(onUnlock).toHaveBeenCalledTimes(1);
+});
+
 test('fires exactly once per completed sequence, and can be re-triggered', () => {
     const onUnlock = jest.fn();
     const handler = createKonamiMatcher(onUnlock);

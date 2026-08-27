@@ -1,8 +1,4 @@
-.barrel-roll {
-    position: relative;
-}
-
-.barrel-roll--spinning {
+.barrel-roll__stage--spinning {
     animation: barrel-roll-spin 1.2s ease-in-out;
     transform-origin: center center;
 }
@@ -63,7 +59,7 @@
 
 /* Badge still shows on unlock; spin and confetti motion are suppressed. */
 @media (prefers-reduced-motion: reduce) {
-    .barrel-roll--spinning {
+    .barrel-roll__stage--spinning {
         animation: none;
     }
 
