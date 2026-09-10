@@ -42,7 +42,7 @@ are on Mac or Windows it comes installed with Docker),
 [Node.js](https://nodejs.org/en/) and
 [Go](https://golang.org/dl/).
 
-Verify if your environment is ready by running the
+Check if your environment is ready by running the
 following 4 commands:
 
 ```sh
@@ -112,3 +112,4 @@ query {
   }
 }
 ```
+Review-gate validation PR 2 - intentional no-op test PR.
