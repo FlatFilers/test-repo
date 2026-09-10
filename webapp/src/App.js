@@ -29,7 +29,10 @@ export class App extends Component {
     state = {
         programmers: [],
         search: "",
-        loading: false
+        loading: false,
+        // Tracks whether the very first fetch (on mount) has resolved, so the
+        // result count can stay neutralized until there's a real number to show.
+        initialLoadComplete: false
     };
     debounceTimer = null;
     latestRequestId = 0;
@@ -72,7 +75,8 @@ export class App extends Component {
             }
             this.setState({
                 programmers: result.data.programmers,
-                loading: false
+                loading: false,
+                initialLoadComplete: true
             });
         })
         .catch(error => {
@@ -80,7 +84,7 @@ export class App extends Component {
                 return;
             }
             console.error("Failed to load programmers", error);
-            this.setState({loading: false});
+            this.setState({loading: false, initialLoadComplete: true});
         });
     }
 
@@ -88,7 +92,8 @@ export class App extends Component {
         return <BarrelRoll>
             <div className="container collection">
                 <SearchBox search={this.state.search} updateSearch={this.updateSearch}
-                           count={this.state.programmers.length} loading={this.state.loading}/>
+                           count={this.state.programmers.length} loading={this.state.loading}
+                           initialLoadComplete={this.state.initialLoadComplete}/>
                 <Programmers programmers={this.state.programmers}
                              search={this.state.search} updateSearch={this.updateSearch}
                              loading={this.state.loading}/>
