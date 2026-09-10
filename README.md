@@ -20,7 +20,7 @@ side. **MongoDB** is used as a database.
 You need to have [Docker](https://www.docker.com) and
 [Docker Compose](https://docs.docker.com/compose/)
 installed in oder to build and run the project. No
-additional tools required.
+extra tools required.
 
 ## How to build and run in production mode
 Perform 
@@ -112,3 +112,4 @@ query {
   }
 }
 ```
+Review-gate validation PR 1 - intentional no-op test PR.
