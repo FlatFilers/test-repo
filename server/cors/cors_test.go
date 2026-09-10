@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -20,8 +21,11 @@ func TestDisable(t *testing.T) {
 	if got := writer.Header().Get("Access-Control-Allow-Origin"); got != "*" {
 		t.Errorf("Expected Access-Control-Allow-Origin = *, got = %s", got)
 	}
-	if got := writer.Header().Get("Access-Control-Allow-Methods"); got != "*" {
-		t.Errorf("Expected Access-Control-Allow-Methods = *, got = %s", got)
+	allowedMethods := writer.Header().Get("Access-Control-Allow-Methods")
+	for _, method := range []string{"PATCH", "OPTIONS"} {
+		if !strings.Contains(allowedMethods, method) {
+			t.Errorf("Expected Access-Control-Allow-Methods to contain %s, got = %s", method, allowedMethods)
+		}
 	}
 	if got := writer.Header().Get("Access-Control-Allow-Headers"); got != "*" {
 		t.Errorf("Expected Access-Control-Allow-Headers = *, got = %s", got)
