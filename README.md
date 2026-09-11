@@ -19,7 +19,7 @@ side. **MongoDB** is used as a database.
 ## System requirements
 You need to have [Docker](https://www.docker.com) and
 [Docker Compose](https://docs.docker.com/compose/)
-installed in oder to build and run the project. No
+installed in order to build and run the project. No
 additional tools required.
 
 ## How to build and run in production mode
