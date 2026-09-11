@@ -153,6 +153,33 @@ test('shows a loading indicator in flight and suppresses the empty state until i
     expect(queryByText(/No programmers match/)).toBeInTheDocument();
 });
 
+test('shows a live result count that matches the rendered rows and names the active filter', async () => {
+    const client = mockClient();
+    client.query
+        .mockReturnValueOnce(Promise.resolve({data: {programmers: []}})) // componentDidMount
+        .mockReturnValueOnce(Promise.resolve({
+            data: {
+                programmers: [
+                    {name: 'Gopher One', title: 't', picture: '', company: 'c', skills: []},
+                    {name: 'Gopher Two', title: 't', picture: '', company: 'c', skills: []},
+                    {name: 'Gopher Three', title: 't', picture: '', company: 'c', skills: []}
+                ]
+            }
+        }));
+
+    const {getByPlaceholderText, getByText, container} = render(<App client={client}/>);
+    await flush();
+
+    fireEvent.change(getByPlaceholderText(/Type skill name/i), {target: {value: 'go'}});
+    await act(async () => {
+        jest.advanceTimersByTime(300);
+        await Promise.resolve();
+    });
+
+    expect(container.querySelectorAll('.collection-item')).toHaveLength(3);
+    expect(getByText('3 programmers with go')).toBeInTheDocument();
+});
+
 test('stops loading and does not crash when the query rejects', async () => {
     const client = mockClient();
     client.query

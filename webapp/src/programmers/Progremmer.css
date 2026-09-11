@@ -5,3 +5,7 @@
 .company {
     font-size: large;
 }
+
+.programmers__empty-state {
+    margin-top: 1.5rem;
+}
