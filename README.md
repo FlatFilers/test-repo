@@ -112,3 +112,4 @@ query {
   }
 }
 ```
+- QA probe 2026-09-12 (task-engine PR mint test)
