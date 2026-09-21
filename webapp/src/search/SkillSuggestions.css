@@ -1,0 +1,36 @@
+/*
+ * Absolutely positioned overlay, anchored to the bottom of its container
+ * (the same `.input-field { position: relative; }` box that SearchBox.css
+ * establishes). top: 100% places it after all of the input-field's normal-flow
+ * content — the input, the loading indicator, and the count line — so it can
+ * never displace or cover them, regardless of which of those happen to be
+ * showing at once.
+ */
+.skill-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    margin: 0.25rem 0 0;
+    padding: 0.25rem 0;
+    list-style: none;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    max-height: 14rem;
+    overflow-y: auto;
+}
+
+.skill-suggestions__item {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    color: #212121;
+    cursor: pointer;
+}
+
+.skill-suggestions__item--active {
+    background: #f5f5f5;
+    color: #000;
+}
