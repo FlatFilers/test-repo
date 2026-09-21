@@ -46,3 +46,74 @@ test('hides the count until the initial load has resolved', () => {
 
     expect(queryByText(/programmer/)).not.toBeInTheDocument();
 });
+
+test('does not render a listbox when suggestionsOpen is false, even with suggestions present', () => {
+    const {queryByRole} = render(
+        <SearchBox search="c" updateSearch={jest.fn()} count={0} loading={false} initialLoadComplete={true}
+                   suggestions={["C#", "C++"]} suggestionsOpen={false} activeSuggestion={-1}
+                   onSelectSuggestion={jest.fn()}/>
+    );
+
+    expect(queryByRole('listbox')).not.toBeInTheDocument();
+});
+
+test('renders the listbox with suggestions when suggestionsOpen is true', () => {
+    const {getByRole, getAllByRole} = render(
+        <SearchBox search="c" updateSearch={jest.fn()} count={0} loading={false} initialLoadComplete={true}
+                   suggestions={["C#", "C++"]} suggestionsOpen={true} activeSuggestion={-1}
+                   onSelectSuggestion={jest.fn()}/>
+    );
+
+    expect(getByRole('listbox')).toBeInTheDocument();
+    expect(getAllByRole('option')).toHaveLength(2);
+});
+
+test('clicking a suggestion calls onSelectSuggestion with the skill name', () => {
+    const onSelectSuggestion = jest.fn();
+    const {getAllByRole} = render(
+        <SearchBox search="c" updateSearch={jest.fn()} count={0} loading={false} initialLoadComplete={true}
+                   suggestions={["C#", "C++"]} suggestionsOpen={true} activeSuggestion={-1}
+                   onSelectSuggestion={onSelectSuggestion}/>
+    );
+
+    fireEvent.mouseDown(getAllByRole('option')[1]);
+
+    expect(onSelectSuggestion).toHaveBeenCalledWith("C++");
+});
+
+test('forwards keyDown and blur events to the handlers passed by App', () => {
+    const onSearchKeyDown = jest.fn();
+    const onSearchBlur = jest.fn();
+    const {getByPlaceholderText} = render(
+        <SearchBox search="" updateSearch={jest.fn()} count={0} loading={false} initialLoadComplete={true}
+                   onSearchKeyDown={onSearchKeyDown} onSearchBlur={onSearchBlur}/>
+    );
+
+    const input = getByPlaceholderText(/Type skill name/i);
+    fireEvent.keyDown(input, {key: 'ArrowDown'});
+    fireEvent.blur(input);
+
+    expect(onSearchKeyDown).toHaveBeenCalled();
+    expect(onSearchBlur).toHaveBeenCalled();
+});
+
+test('exposes combobox ARIA attributes reflecting open state and active suggestion', () => {
+    const {getByPlaceholderText, rerender} = render(
+        <SearchBox search="c" updateSearch={jest.fn()} count={0} loading={false} initialLoadComplete={true}
+                   suggestions={["C#", "C++"]} suggestionsOpen={false} activeSuggestion={-1}/>
+    );
+
+    const input = getByPlaceholderText(/Type skill name/i);
+    expect(input).toHaveAttribute('role', 'combobox');
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(input).toHaveAttribute('aria-controls', 'skill-suggestions');
+    expect(input).not.toHaveAttribute('aria-activedescendant');
+
+    rerender(
+        <SearchBox search="c" updateSearch={jest.fn()} count={0} loading={false} initialLoadComplete={true}
+                   suggestions={["C#", "C++"]} suggestionsOpen={true} activeSuggestion={1}/>
+    );
+
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    expect(input).toHaveAttribute('aria-activedescendant', 'skill-suggestion-1');
+});
