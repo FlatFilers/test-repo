@@ -16,4 +16,7 @@ type Skill {
 
 type Query {
     programmers(skill: String!): [Programmer!]!
+    # Distinct skill names starting with the given prefix, most-used first,
+    # for search autocomplete. An empty prefix returns the top skills overall.
+    skills(prefix: String!): [String!]!
 }

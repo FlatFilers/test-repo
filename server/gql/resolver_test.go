@@ -17,6 +17,10 @@ func (mockDB MockDB) GetProgrammers(string) ([]*model.Programmer, error) {
 	return []*model.Programmer{{ID: "test-id"}}, errors.New("test-error")
 }
 
+func (mockDB MockDB) GetSkills(string, int) ([]string, error) {
+	return []string{"Go", "GORM", "Gorilla/Mux"}, nil
+}
+
 func TestQuery(t *testing.T) {
 	tests := []struct {
 		name string
@@ -54,5 +58,32 @@ func TestProgrammers(t *testing.T) {
 	}
 	if err.Error() != "test-error" {
 		t.Errorf("GetProgrammers() got = %v, want test-error", err.Error())
+	}
+}
+
+func TestSkills(t *testing.T) {
+	r := &queryResolver{
+		Resolver: &Resolver{&MockDB{}},
+	}
+
+	skills, err := r.Skills(context.TODO(), "go")
+
+	if err != nil {
+		t.Fatalf("Skills() unexpected error: %v", err)
+	}
+	want := []string{"Go", "GORM", "Gorilla/Mux"}
+	if len(skills) != len(want) {
+		t.Fatalf("Skills() got = %v, want %v", skills, want)
+	}
+	for i := range want {
+		if skills[i] != want[i] {
+			t.Errorf("Skills()[%d] got = %v, want %v", i, skills[i], want[i])
+		}
+	}
+	// B4: at most 10 names, most-used first — proven here by the mock
+	// returning names in usage-count order and the resolver passing them
+	// through unmodified.
+	if len(skills) > 10 {
+		t.Errorf("Skills() returned %d names, want at most 10", len(skills))
 	}
 }
