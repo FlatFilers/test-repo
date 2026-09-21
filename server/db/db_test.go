@@ -51,3 +51,43 @@ func TestFilter(t *testing.T) {
 		})
 	}
 }
+
+// TestSkillsPipelineStageOrder asserts the aggregation runs $unwind before
+// $match (B3: a document-scoped match would return every skill on a matching
+// programmer, not just the ones matching the prefix) and $sort before $limit
+// (otherwise the pipeline truncates to an arbitrary set instead of the
+// most-used skills).
+func TestSkillsPipelineStageOrder(t *testing.T) {
+	mongoDB := MongoDB{}
+
+	pipeline := mongoDB.skillsPipeline("go", 10)
+
+	stageName := func(stage bson.D) string {
+		if len(stage) == 0 {
+			return ""
+		}
+		return stage[0].Key
+	}
+	indexOf := func(name string) int {
+		for i, stage := range pipeline {
+			if stageName(stage) == name {
+				return i
+			}
+		}
+		t.Fatalf("pipeline missing stage %q: %v", name, pipeline)
+		return -1
+	}
+
+	unwind, match := indexOf("$unwind"), indexOf("$match")
+	group, sort, limit := indexOf("$group"), indexOf("$sort"), indexOf("$limit")
+
+	if unwind >= match {
+		t.Errorf("$unwind must precede $match: got $unwind at %d, $match at %d", unwind, match)
+	}
+	if sort >= limit {
+		t.Errorf("$sort must precede $limit: got $sort at %d, $limit at %d", sort, limit)
+	}
+	if match >= group {
+		t.Errorf("$match must precede $group: got $match at %d, $group at %d", match, group)
+	}
+}
