@@ -1,4 +1,4 @@
-import {MAX_SUGGESTIONS, collectSkillNames, mergeVocabulary, matchSkills} from './skillSuggestions';
+import {MAX_SUGGESTIONS, collectSkillNames, mergeVocabulary, matchSkills} from './skillMatcher';
 
 // Mirrors the real seeded vocabulary (28 distinct skill names across 8 programmers).
 const SEEDED_SKILLS = [
