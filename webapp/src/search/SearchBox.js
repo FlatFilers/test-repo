@@ -13,7 +13,13 @@ export function SearchBox(props) {
             <input placeholder="Type skill name to filter..."
                    id="search_string" type="text" className="validate search-box__input"
                    onChange={e => props.updateSearch(e.target.value)}
+                   onBlur={props.onBlur}
                    value={props.search}
+                   role="combobox"
+                   aria-expanded={props.expanded}
+                   aria-controls="skill-suggestions"
+                   aria-activedescendant={props.activeOptionId}
+                   autoComplete="off"
             />
             {hasQuery &&
                 <i className="fas fa-times search-box__clear"

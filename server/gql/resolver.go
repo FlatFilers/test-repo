@@ -17,6 +17,13 @@ func (r *Resolver) Query() gen.QueryResolver {
 
 type queryResolver struct{ *Resolver }
 
+// suggestionLimit caps skill autocomplete suggestions at the top 10 most-used matches.
+const suggestionLimit = 10
+
 func (r *queryResolver) Programmers(ctx context.Context, skill string) ([]*model.Programmer, error) {
 	return r.DB.GetProgrammers(skill)
+}
+
+func (r *queryResolver) Skills(ctx context.Context, prefix string) ([]string, error) {
+	return r.DB.GetSkills(prefix, suggestionLimit)
 }
