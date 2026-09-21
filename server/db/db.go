@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"regexp"
 )
 
 type DB interface {
@@ -38,12 +39,18 @@ func (db MongoDB) GetProgrammers(skill string) ([]*model.Programmer, error) {
 	return p, nil
 }
 
+// filter builds a case-insensitive prefix match on skill name.
+//
+// The skill is user input, so it is escaped with regexp.QuoteMeta before being
+// embedded in the pattern. Without escaping, a search for "C++" is interpreted
+// as the quantifier "C+" and wrongly matches C# and CSS, and a search for "("
+// makes MongoDB reject the query outright.
 func (db MongoDB) filter(skill string) bson.D {
 	return bson.D{{
 		"skills.name",
 		bson.D{{
 			"$regex",
-			"^" + skill + ".*$",
+			"^" + regexp.QuoteMeta(skill) + ".*$",
 		}, {
 			"$options",
 			"i",
