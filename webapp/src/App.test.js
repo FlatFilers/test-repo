@@ -201,6 +201,38 @@ test('stops loading and does not crash when the query rejects', async () => {
     console.error.mockRestore();
 });
 
+test('does not pair the full-list count with a filter typed during the initial flight', async () => {
+    const initialResponse = deferred();
+    const client = mockClient();
+    client.query
+        .mockReturnValueOnce(initialResponse.promise) // componentDidMount — still in flight when the user types
+        .mockReturnValueOnce(Promise.resolve({
+            data: {programmers: [{name: 'Gopher', title: 't', picture: '', company: 'c', skills: []}]}
+        }));
+
+    const {getByPlaceholderText, getByText, queryByText, getByRole} = render(<App client={client}/>);
+    await flush();
+
+    // Type while the initial (empty-filter) request is still in flight.
+    fireEvent.change(getByPlaceholderText(/Type skill name/i), {target: {value: 'go'}});
+
+    // The outdated full-list response lands first and must publish nothing:
+    // no stale count pairing, and \"Searching...\" stays up.
+    await act(async () => {
+        initialResponse.resolve({data: {programmers: []}});
+        await Promise.resolve();
+    });
+    expect(queryByText(/0 programmers/)).not.toBeInTheDocument();
+    expect(getByRole('status')).toBeInTheDocument();
+
+    // The debounced \"go\" request then lands and publishes the fresh count.
+    await act(async () => {
+        jest.advanceTimersByTime(300);
+        await Promise.resolve();
+    });
+    expect(getByText('1 programmer with go')).toBeInTheDocument();
+});
+
 test('suppresses the stale count from the first keystroke, through the debounce window and the flight', async () => {
     const client = mockClient();
     client.query

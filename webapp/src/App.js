@@ -77,6 +77,13 @@ export class App extends Component {
             if (this.unmounted || requestId !== this.latestRequestId) {
                 return; // unmounted, or a newer search has already superseded this response
             }
+            if (skill !== this.state.search) {
+                // Response answers an outdated filter (e.g. the full-list request
+                // landing while the user already typed): it must not publish its
+                // count or clear "Searching..." — the pending debounce will land
+                // a response for the current filter.
+                return;
+            }
             this.setState({
                 programmers: result.data.programmers,
                 loading: false,
@@ -85,6 +92,11 @@ export class App extends Component {
         })
         .catch(error => {
             if (this.unmounted || requestId !== this.latestRequestId) {
+                return;
+            }
+            if (skill !== this.state.search) {
+                // Rejection answers an outdated filter: keep "Searching..." until
+                // the pending debounce lands a response for the current filter.
                 return;
             }
             console.error("Failed to load programmers", error);
