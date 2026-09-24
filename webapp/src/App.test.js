@@ -200,3 +200,36 @@ test('stops loading and does not crash when the query rejects', async () => {
 
     console.error.mockRestore();
 });
+
+test('suppresses the stale count from the first keystroke, through the debounce window and the flight', async () => {
+    const client = mockClient();
+    client.query
+        .mockReturnValueOnce(Promise.resolve({data: {programmers: []}})) // componentDidMount
+        .mockReturnValueOnce(Promise.resolve({
+            data: {programmers: [{name: 'Gopher', title: 't', picture: '', company: 'c', skills: []}]}
+        }))
+        .mockReturnValueOnce(Promise.resolve({data: {programmers: []}}));
+
+    const {getByPlaceholderText, getByText, queryByText, getByRole} = render(<App client={client}/>);
+    await flush();
+
+    fireEvent.change(getByPlaceholderText(/Type skill name/i), {target: {value: 'go'}});
+    await act(async () => {
+        jest.advanceTimersByTime(300);
+        await Promise.resolve();
+    });
+    expect(getByText('1 programmer with go')).toBeInTheDocument();
+
+    // Typing a new query: the stale count must vanish immediately — before the
+    // debounce window ends — and stay hidden while the follow-up request flies.
+    fireEvent.change(getByPlaceholderText(/Type skill name/i), {target: {value: 'golang'}});
+    expect(queryByText(/1 programmer/)).not.toBeInTheDocument();
+    expect(getByRole('status')).toBeInTheDocument();
+
+    await act(async () => {
+        jest.advanceTimersByTime(300);
+        await Promise.resolve();
+    });
+
+    expect(getByText('0 programmers with golang')).toBeInTheDocument();
+});

@@ -47,7 +47,6 @@ test('hides the count until the initial load has resolved', () => {
     expect(queryByText(/programmer/)).not.toBeInTheDocument();
 });
 
-
 test('hides the count while a follow-up search is in flight so the old count is never paired with the new filter', () => {
     const {queryByText} = render(
         <SearchBox search="ruby" updateSearch={jest.fn()} count={3} loading={true} initialLoadComplete={true}/>

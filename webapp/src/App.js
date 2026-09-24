@@ -39,7 +39,11 @@ export class App extends Component {
 
     updateSearch = (search) => {
         const trimmed = search.trim();
-        this.setState({search: trimmed});
+        // Enter the loading state at the keystroke, not when the debounced request
+        // fires: during the 300 ms window the rendered results are stale, so the
+        // count must not pair the new filter name with the old count (and the
+        // empty state must not fire for a query that hasn't run yet).
+        this.setState({search: trimmed, loading: true});
 
         if (this.debounceTimer) {
             clearTimeout(this.debounceTimer);
