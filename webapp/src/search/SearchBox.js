@@ -27,8 +27,10 @@ export function SearchBox(props) {
                     Searching...
                 </div>
             }
-            {/* Neutralized until the first fetch resolves, so we never flash "0 programmers". */}
-            {props.initialLoadComplete &&
+            {/* Hidden until the first fetch resolves (never flash "0 programmers")
+                and while a search is in flight (never pair the old count with the
+                new filter name — the count returns once fresh results land). */}
+            {!props.loading && props.initialLoadComplete &&
                 <div className="search-box__count">
                     {countText}
                 </div>
