@@ -112,3 +112,9 @@ query {
   }
 }
 ```
+
+## Obvious demo build
+
+This repository hosts example builds for Autobuild demos. This change came from
+the Generic Proposal Review demo (2026-10-06): the build's plan proposal was
+reviewed and approved before this PR was opened.
