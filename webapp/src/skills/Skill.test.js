@@ -23,3 +23,13 @@ test('renders a skill with high importance', () => {
     expect(skillName).toBeInTheDocument();
     expect(skillName.classList.contains('boldText')).toBe(true)
 });
+
+test('exposes the skill name as the chip accessible label', () => {
+    const skill = {
+        name: "Java",
+        importance: 1
+    };
+    const {getByLabelText} = render(<Skill skill={skill}/>);
+    const chip = getByLabelText("Java");
+    expect(chip).toBeInTheDocument();
+});

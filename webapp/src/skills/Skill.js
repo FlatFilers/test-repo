@@ -6,7 +6,7 @@ export function Skill(props) {
     const skillClass = props.highlighted ? "greenSkill" : "greySkill";
     const cl = `skill ${skillClass} card-panel lighten-5`;
     const textStyle = skill.importance > 1 ? "boldText" : "";
-    return <div className={cl} onClick={() => props.updateSearch(skill.name)}>
+    return <div className={cl} onClick={() => props.updateSearch(skill.name)} aria-label={skill.name}>
         {
             skill.icon ? <i className={`fab fa-lg fa-${skill.icon}`}/> : ""
         } <span className={textStyle}>{skill.name}</span>
