@@ -27,3 +27,10 @@ func TestClientOptionsNonProdProfile(t *testing.T) {
 		t.Errorf("clientOptions() got = %v, want %v", got, want)
 	}
 }
+
+func TestNormalizeSkill(t *testing.T) {
+	got := normalizeSkill("  GoLang  ")
+	if got != "golang" {
+		t.Errorf("normalizeSkill() got = %q, want %q", got, "golang")
+	}
+}

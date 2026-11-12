@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"strings"
 	"net/http"
 	"os"
 )
@@ -38,6 +39,12 @@ func gqlHandler(db db.DB) http.HandlerFunc {
 		gh = cors.Disable(gh)
 	}
 	return gh
+}
+
+// normalizeSkill trims surrounding whitespace and lowercases a skill
+// name so lookups are case- and spacing-insensitive.
+func normalizeSkill(s string) string {
+	return strings.ToLower(strings.TrimSpace(s))
 }
 
 func clientOptions() *options.ClientOptions {
