@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./SearchBox.css";
 
 export function SearchBox(props) {
     const hasQuery = props.search.length > 0;
     const clear = () => props.updateSearch("");
+
+    // Escape clears the search from anywhere on the page.
+    useEffect(() => {
+        const onKeyDown = (e) => {
+            if (e.key === "Escape") {
+                clear();
+            }
+        };
+        window.addEventListener("keydown", onKeyDown);
+    }, []);
 
     const countLabel = `${props.count} ${props.count === 1 ? "programmer" : "programmers"}`;
     const countText = hasQuery ? `${countLabel} with ${props.search}` : countLabel;
